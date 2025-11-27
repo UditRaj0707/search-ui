@@ -1,0 +1,297 @@
+.card {
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 2rem;
+  width: 100%;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.cardHeader {
+  min-width: 250px;
+  max-width: 250px;
+  padding-right: 2rem;
+  border-right: 1px solid #f0f0f0;
+  flex-shrink: 0;
+}
+
+.companyName {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0 0 0.5rem 0;
+  line-height: 1.4;
+  word-wrap: break-word;
+}
+
+.industry {
+  font-size: 0.85rem;
+  color: #667eea;
+  font-weight: 500;
+  padding: 0.25rem 0.5rem;
+  background: #f0f4ff;
+  border-radius: 6px;
+  display: inline-block;
+}
+
+.cardBody {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 2rem;
+  min-width: 0;
+}
+
+.info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.description {
+  font-size: 0.9rem;
+  color: #666;
+  line-height: 1.5;
+  margin-bottom: 0.5rem;
+}
+
+.meta {
+  font-size: 0.85rem;
+  color: #888;
+}
+
+.metaLabel {
+  font-weight: 500;
+  color: #666;
+}
+
+.founderName {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.designation {
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: 400;
+  margin-bottom: 0.5rem;
+}
+
+.location {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  color: #888;
+  margin-top: 0.4rem;
+}
+
+.location svg {
+  flex-shrink: 0;
+  color: #999;
+}
+
+.websiteLink {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: #667eea;
+  text-decoration: none;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+  transition: color 0.2s ease;
+}
+
+.websiteLink:hover {
+  color: #5568d3;
+}
+
+.websiteLink svg {
+  flex-shrink: 0;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1rem;
+}
+
+.linkedinLink {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #0077b5;
+  text-decoration: none;
+  font-size: 0.9rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  background: #f0f7ff;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.linkedinLink:hover {
+  background: #e0efff;
+  color: #005885;
+}
+
+.linkedinLink svg {
+  flex-shrink: 0;
+}
+
+.uploadSection {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.fileInput {
+  display: none;
+}
+
+.uploadButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: #f5f5f5;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.uploadButton:hover {
+  background: #e8e8e8;
+  border-color: #d0d0d0;
+}
+
+.uploadButton svg {
+  flex-shrink: 0;
+}
+
+.uploadSpinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid #e0e0e0;
+  border-top: 2px solid #667eea;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.uploadedFiles {
+  font-size: 0.75rem;
+  color: #999;
+  text-align: right;
+}
+
+.notesSection {
+  flex: 1;
+  min-width: 0;
+  margin-right: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.notesHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.notesLabel {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #666;
+}
+
+.saveNoteButton {
+  padding: 0.25rem 0.75rem;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.saveNoteButton:hover:not(:disabled) {
+  background: #5568d3;
+}
+
+.saveNoteButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.notesTextarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-family: inherit;
+  color: #333;
+  resize: vertical;
+  min-height: 80px;
+  transition: border-color 0.2s ease;
+}
+
+.notesTextarea:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+@media (max-width: 768px) {
+  .card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+  }
+
+  .cardHeader {
+    min-width: auto;
+    width: 100%;
+    padding-right: 0;
+    padding-bottom: 1rem;
+    border-right: none;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  .cardBody {
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    gap: 1rem;
+  }
+}
+
