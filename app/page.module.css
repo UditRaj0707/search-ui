@@ -161,6 +161,141 @@
   font-size: 1.1rem;
 }
 
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 2rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.tab {
+  padding: 0.75rem 1.5rem;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #666;
+  transition: all 0.2s ease;
+  position: relative;
+  top: 2px;
+}
+
+.tab:hover {
+  color: #667eea;
+  background: #f5f5f5;
+}
+
+.activeTab {
+  color: #667eea;
+  border-bottom-color: #667eea;
+  font-weight: 600;
+}
+
+.tabContent {
+  margin-top: 1.5rem;
+}
+
+/* Notes List */
+.notesList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.noteCard {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1.25rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.noteHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.noteCardType {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #667eea;
+}
+
+.noteContent {
+  color: #333;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+/* Documents List */
+.documentsList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.documentCard {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1.25rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.documentHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.documentFilename {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.documentCardType {
+  font-size: 0.85rem;
+  color: #666;
+  background: #f5f5f5;
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+}
+
+.documentPreview {
+  color: #555;
+  line-height: 1.6;
+  margin-bottom: 0.5rem;
+}
+
+.documentHighlights {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #e0e0e0;
+}
+
+.documentHighlights span {
+  background: #fff9c4;
+  padding: 0.1rem 0.2rem;
+  border-radius: 2px;
+}
+
+.noResults {
+  text-align: center;
+  color: #999;
+  padding: 3rem 2rem;
+  font-size: 1rem;
+}
+
 @media (max-width: 768px) {
   .mainContent.withChat {
     margin-right: 0;
@@ -181,6 +316,17 @@
     right: 1.5rem;
     width: 56px;
     height: 56px;
+  }
+
+  .tabs {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .tab {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+    white-space: nowrap;
   }
 }
 

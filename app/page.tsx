@@ -34,12 +34,55 @@ interface PersonCardData {
 
 type CardData = CompanyCardData | PersonCardData
 
+interface NoteData {
+  id: string
+  card_id: string
+  card_type: string
+  note: string
+  parent_card?: {
+    id: string
+    name: string
+    type: string
+  }
+}
+
+interface DocumentData {
+  id: string
+  card_id: string
+  filename: string
+  chunk_index: number
+  content_preview: string
+  score: number
+  highlights?: any
+  parent_card: {
+    id: string
+    name: string
+    type: string
+  }
+}
+
+interface SearchResults {
+  companies: CompanyCardData[]
+  persons: PersonCardData[]
+  notes: NoteData[]
+  documents: DocumentData[]
+}
+
+type TabType = 'companies' | 'persons' | 'notes' | 'documents'
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
 
 export default function Home() {
   const [isChatOpen, setIsChatOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
-  const [cards, setCards] = useState<CardData[]>([])
+  const [activeTab, setActiveTab] = useState<TabType>('companies')
+  const [searchResults, setSearchResults] = useState<SearchResults>({
+    companies: [],
+    persons: [],
+    notes: [],
+    documents: []
+  })
+  const [defaultCards, setDefaultCards] = useState<CardData[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isSearching, setIsSearching] = useState(false)
@@ -58,7 +101,7 @@ export default function Home() {
         throw new Error('Failed to fetch cards')
       }
       const data = await response.json()
-      setCards(data)
+      setDefaultCards(data)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
       console.error('Error loading cards:', err)
@@ -71,6 +114,8 @@ export default function Home() {
     setSearchQuery(query)
     if (!query.trim()) {
       loadCards()
+      setSearchResults({ companies: [], persons: [], notes: [], documents: [] })
+      setActiveTab('companies')
       return
     }
 
@@ -83,8 +128,18 @@ export default function Home() {
       if (!response.ok) {
         throw new Error('Search failed')
       }
-      const data = await response.json()
-      setCards(data)
+      const data: SearchResults = await response.json()
+      setSearchResults(data)
+      // Set active tab to first tab with results
+      if (data.companies.length > 0) {
+        setActiveTab('companies')
+      } else if (data.persons.length > 0) {
+        setActiveTab('persons')
+      } else if (data.notes.length > 0) {
+        setActiveTab('notes')
+      } else if (data.documents.length > 0) {
+        setActiveTab('documents')
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Search failed')
       console.error('Error searching:', err)
@@ -116,7 +171,7 @@ export default function Home() {
             </div>
           )}
 
-          {(loading || isSearching) && cards.length === 0 && !error && (
+          {(loading || isSearching) && !searchQuery && defaultCards.length === 0 && !error && (
             <div className={styles.loadingState}>
               <div className={styles.spinner}></div>
               <p>Loading cards...</p>
@@ -125,72 +180,200 @@ export default function Home() {
 
           {!error && (
             <>
-              {searchQuery && !isSearching && (
-                <p className={styles.resultsInfo}>
-                  {cards.length > 0 
-                    ? `Found ${cards.length} result${cards.length !== 1 ? 's' : ''} for "${searchQuery}"`
-                    : `No results found for "${searchQuery}"`
-                  }
-                </p>
-              )}
+              {searchQuery ? (
+                <>
+                  {/* Tabs */}
+                  <div className={styles.tabs}>
+                    <button
+                      className={`${styles.tab} ${activeTab === 'companies' ? styles.activeTab : ''}`}
+                      onClick={() => setActiveTab('companies')}
+                    >
+                      Companies ({searchResults.companies.length})
+                    </button>
+                    <button
+                      className={`${styles.tab} ${activeTab === 'persons' ? styles.activeTab : ''}`}
+                      onClick={() => setActiveTab('persons')}
+                    >
+                      Persons ({searchResults.persons.length})
+                    </button>
+                    <button
+                      className={`${styles.tab} ${activeTab === 'notes' ? styles.activeTab : ''}`}
+                      onClick={() => setActiveTab('notes')}
+                    >
+                      Notes ({searchResults.notes.length})
+                    </button>
+                    <button
+                      className={`${styles.tab} ${activeTab === 'documents' ? styles.activeTab : ''}`}
+                      onClick={() => setActiveTab('documents')}
+                    >
+                      Documents ({searchResults.documents.length})
+                    </button>
+                  </div>
 
-              {cards.length > 0 && (
-                <div className={styles.cardsGrid}>
-                  {cards.map((card, index) => {
-                    if (card.card_type === 'company') {
-                      const companyCard = card as CompanyCardData
-                      return (
-                        <CompanyCard
-                          key={`company-${companyCard.id}-${index}`}
-                          id={companyCard.id}
-                          name={companyCard.name}
-                          industry={companyCard.industry}
-                          description={companyCard.description}
-                          founded={companyCard.founded}
-                          location={companyCard.location}
-                          website={companyCard.website}
-                          linkedin_url={companyCard.linkedin_url}
-                          card_type="company"
-                        />
-                      )
-                    } else {
-                      const personCard = card as PersonCardData
-                      return (
-                        <PersonCard
-                          key={`person-${personCard.id}-${index}`}
-                          id={personCard.id}
-                          name={personCard.name}
-                          designation={personCard.designation}
-                          company={personCard.company}
-                          linkedin_id={personCard.linkedin_id}
-                          linkedin_url={personCard.linkedin_url}
-                          education={personCard.education}
-                          experienceYears={personCard.experience_years}
-                          location={personCard.location}
-                          card_type="person"
-                        />
-                      )
-                    }
-                  })}
-                </div>
-              )}
+                  {/* Tab Content */}
+                  {!isSearching && (
+                    <div className={styles.tabContent}>
+                      {activeTab === 'companies' && (
+                        <div className={styles.cardsGrid}>
+                          {searchResults.companies.length > 0 ? (
+                            searchResults.companies.map((card, index) => (
+                              <CompanyCard
+                                key={`company-${card.id}-${index}`}
+                                id={card.id}
+                                name={card.name}
+                                industry={card.industry}
+                                description={card.description}
+                                founded={card.founded}
+                                location={card.location}
+                                website={card.website}
+                                linkedin_url={card.linkedin_url}
+                                card_type="company"
+                              />
+                            ))
+                          ) : (
+                            <p className={styles.noResults}>No companies found</p>
+                          )}
+                        </div>
+                      )}
 
-              {!searchQuery && !loading && !isSearching && cards.length === 0 && (
-                <div className={styles.emptyState}>
-                  <svg 
-                    width="64" 
-                    height="64" 
-                    viewBox="0 0 24 24" 
-                    fill="none" 
-                    stroke="currentColor" 
-                    strokeWidth="1.5"
-                    className={styles.emptyIcon}
-                  >
-                    <circle cx="11" cy="11" r="8"/>
-                    <path d="m21 21-4.35-4.35"/>
-                  </svg>
-                  <p className={styles.emptyText}>Start searching to find companies and people</p>
-                </div>
+                      {activeTab === 'persons' && (
+                        <div className={styles.cardsGrid}>
+                          {searchResults.persons.length > 0 ? (
+                            searchResults.persons.map((card, index) => (
+                              <PersonCard
+                                key={`person-${card.id}-${index}`}
+                                id={card.id}
+                                name={card.name}
+                                designation={card.designation}
+                                company={card.company}
+                                linkedin_id={card.linkedin_id}
+                                linkedin_url={card.linkedin_url}
+                                education={card.education}
+                                experienceYears={card.experience_years}
+                                location={card.location}
+                                card_type="person"
+                              />
+                            ))
+                          ) : (
+                            <p className={styles.noResults}>No persons found</p>
+                          )}
+                        </div>
+                      )}
+
+                      {activeTab === 'notes' && (
+                        <div className={styles.notesList}>
+                          {searchResults.notes.length > 0 ? (
+                            searchResults.notes.map((note, index) => (
+                              <div key={`note-${note.id}-${index}`} className={styles.noteCard}>
+                                <div className={styles.noteHeader}>
+                                  <span className={styles.noteCardType}>
+                                    {note.parent_card?.type === 'company' ? '🏢' : '👤'} {note.parent_card?.name || note.card_id}
+                                  </span>
+                                </div>
+                                <div className={styles.noteContent}>{note.note}</div>
+                              </div>
+                            ))
+                          ) : (
+                            <p className={styles.noResults}>No notes found</p>
+                          )}
+                        </div>
+                      )}
+
+                      {activeTab === 'documents' && (
+                        <div className={styles.documentsList}>
+                          {searchResults.documents.length > 0 ? (
+                            searchResults.documents.map((doc, index) => (
+                              <div key={`doc-${doc.id}-${index}`} className={styles.documentCard}>
+                                <div className={styles.documentHeader}>
+                                  <span className={styles.documentFilename}>📄 {doc.filename}</span>
+                                  <span className={styles.documentCardType}>
+                                    {doc.parent_card.type === 'company' ? '🏢' : '👤'} {doc.parent_card.name}
+                                  </span>
+                                </div>
+                                <div className={styles.documentPreview}>{doc.content_preview}</div>
+                                {doc.highlights && Object.keys(doc.highlights).length > 0 && (
+                                  <div className={styles.documentHighlights}>
+                                    {Object.entries(doc.highlights).map(([field, highlights]: [string, any]) => (
+                                      <div key={field}>
+                                        {highlights.map((hl: string, i: number) => (
+                                          <span key={i} dangerouslySetInnerHTML={{ __html: hl }} />
+                                        ))}
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            ))
+                          ) : (
+                            <p className={styles.noResults}>No documents found</p>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </>
+              ) : (
+                <>
+                  {/* Default cards when no search */}
+                  {defaultCards.length > 0 && (
+                    <div className={styles.cardsGrid}>
+                      {defaultCards.map((card, index) => {
+                        if (card.card_type === 'company') {
+                          const companyCard = card as CompanyCardData
+                          return (
+                            <CompanyCard
+                              key={`company-${companyCard.id}-${index}`}
+                              id={companyCard.id}
+                              name={companyCard.name}
+                              industry={companyCard.industry}
+                              description={companyCard.description}
+                              founded={companyCard.founded}
+                              location={companyCard.location}
+                              website={companyCard.website}
+                              linkedin_url={companyCard.linkedin_url}
+                              card_type="company"
+                            />
+                          )
+                        } else {
+                          const personCard = card as PersonCardData
+                          return (
+                            <PersonCard
+                              key={`person-${personCard.id}-${index}`}
+                              id={personCard.id}
+                              name={personCard.name}
+                              designation={personCard.designation}
+                              company={personCard.company}
+                              linkedin_id={personCard.linkedin_id}
+                              linkedin_url={personCard.linkedin_url}
+                              education={personCard.education}
+                              experienceYears={personCard.experience_years}
+                              location={personCard.location}
+                              card_type="person"
+                            />
+                          )
+                        }
+                      })}
+                    </div>
+                  )}
+
+                  {!loading && !isSearching && defaultCards.length === 0 && (
+                    <div className={styles.emptyState}>
+                      <svg 
+                        width="64" 
+                        height="64" 
+                        viewBox="0 0 24 24" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        strokeWidth="1.5"
+                        className={styles.emptyIcon}
+                      >
+                        <circle cx="11" cy="11" r="8"/>
+                        <path d="m21 21-4.35-4.35"/>
+                      </svg>
+                      <p className={styles.emptyText}>Start searching to find companies and people</p>
+                    </div>
+                  )}
+                </>
               )}
             </>
           )}
