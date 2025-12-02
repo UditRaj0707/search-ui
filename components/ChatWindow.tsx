@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
+import ReactMarkdown from 'react-markdown'
 import styles from './ChatWindow.module.css'
 
 interface ChatWindowProps {
@@ -55,9 +56,8 @@ export default function ChatWindow({ onClose }: ChatWindowProps) {
     setIsLoading(true)
 
     try {
-      // Build conversation history (excluding the initial greeting)
       const conversationHistory = messages
-        .slice(1) // Skip the initial greeting
+        .slice(1)
         .map(msg => ({
           role: msg.sender === 'user' ? 'user' : 'assistant',
           content: msg.text
@@ -138,7 +138,22 @@ export default function ChatWindow({ onClose }: ChatWindowProps) {
             }`}
           >
             <div className={styles.messageContent}>
-              {message.text}
+              {message.sender === 'ai' ? (
+                <ReactMarkdown
+                  components={{
+                    // Customize how markdown elements render
+                    p: ({children}) => <p style={{margin: '0.5em 0'}}>{children}</p>,
+                    ul: ({children}) => <ul style={{marginLeft: '1.2em', marginTop: '0.5em'}}>{children}</ul>,
+                    ol: ({children}) => <ol style={{marginLeft: '1.2em', marginTop: '0.5em'}}>{children}</ol>,
+                    li: ({children}) => <li style={{marginBottom: '0.3em'}}>{children}</li>,
+                    strong: ({children}) => <strong style={{fontWeight: 600}}>{children}</strong>,
+                  }}
+                >
+                  {message.text}
+                </ReactMarkdown>
+              ) : (
+                message.text
+              )}
             </div>
             <div className={styles.messageTime}>
               {message.timestamp.toLocaleTimeString([], { 
@@ -186,4 +201,3 @@ export default function ChatWindow({ onClose }: ChatWindowProps) {
     </div>
   )
 }
-
